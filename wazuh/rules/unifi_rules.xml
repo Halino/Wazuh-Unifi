@@ -1,0 +1,264 @@
+<!--
+  UniFi log rules for Wazuh
+  Groups events by category (Security, System, Monitoring, etc.) and raises alerts for notable events.
+  MITRE ATT&CK mappings included where applicable.
+-->
+<group name="unifi,">
+  <!-- ================================================================
+       CEF events (UniFi SIEM / Activity Logging export)
+       ================================================================ -->
+
+  <!-- Grouping rule: all UniFi CEF events -->
+  <rule id="100100" level="0">
+    <decoded_as>unifi-cef</decoded_as>
+    <description>UniFi CEF event (grouping).</description>
+  </rule>
+
+  <!-- System / Admin activity -->
+  <rule id="100101" level="3">
+    <if_sid>100100</if_sid>
+    <field name="unifi_event_name">Admin Accessed UniFi Network</field>
+    <description>UniFi: Admin accessed UniFi Network.</description>
+    <group>authentication_success,unifi,syslog,</group>
+    <mitre>
+      <id>T1078</id><!-- Valid Accounts -->
+    </mitre>
+  </rule>
+
+  <rule id="100102" level="5">
+    <if_sid>100100</if_sid>
+    <field name="unifi_event_name">Admin Made Config Changes</field>
+    <description>UniFi: Admin made configuration changes.</description>
+    <group>configuration_change,unifi,syslog,</group>
+    <mitre>
+      <id>T1562</id><!-- Impair Defenses -->
+    </mitre>
+  </rule>
+
+  <rule id="100103" level="3">
+    <if_sid>100100</if_sid>
+    <match>Device Adopted</match>
+    <description>UniFi: Device adopted.</description>
+    <group>unifi,syslog,</group>
+    <mitre>
+      <id>T1200</id><!-- Hardware Additions -->
+    </mitre>
+  </rule>
+
+  <rule id="100104" level="5">
+    <if_sid>100100</if_sid>
+    <match>Device Offline</match>
+    <description>UniFi: Device went offline.</description>
+    <group>unifi,syslog,availability,</group>
+    <mitre>
+      <id>T1489</id><!-- Service Stop -->
+    </mitre>
+  </rule>
+
+  <!-- Monitoring / WiFi / Client events -->
+  <rule id="100105" level="2">
+    <if_sid>100100</if_sid>
+    <field name="unifi_event_name">WiFi Client Connected</field>
+    <description>UniFi: WiFi client connected.</description>
+    <group>unifi,syslog,</group>
+  </rule>
+
+  <rule id="100106" level="2">
+    <if_sid>100100</if_sid>
+    <field name="unifi_event_name">WiFi Client Disconnected</field>
+    <description>UniFi: WiFi client disconnected.</description>
+    <group>unifi,syslog,</group>
+  </rule>
+
+  <rule id="100107" level="2">
+    <if_sid>100100</if_sid>
+    <match>Client Connected</match>
+    <description>UniFi: Client connected (wired or WiFi).</description>
+    <group>unifi,syslog,</group>
+  </rule>
+
+  <rule id="100108" level="2">
+    <if_sid>100100</if_sid>
+    <match>Client Disconnected</match>
+    <description>UniFi: Client disconnected.</description>
+    <group>unifi,syslog,</group>
+  </rule>
+
+  <rule id="100117" level="2">
+    <if_sid>100100</if_sid>
+    <field name="unifi_event_name">WiFi Client Roaming</field>
+    <description>UniFi: WiFi client roaming between APs.</description>
+    <group>unifi,syslog,</group>
+  </rule>
+
+  <!-- Security -->
+  <rule id="100109" level="8">
+    <if_sid>100100</if_sid>
+    <match>Threat Detected</match>
+    <description>UniFi: Security threat detected and blocked.</description>
+    <group>unifi,security,syslog,</group>
+    <mitre>
+      <id>T1071</id><!-- Application Layer Protocol -->
+    </mitre>
+  </rule>
+
+  <rule id="100110" level="8">
+    <if_sid>100100</if_sid>
+    <match>Honeypot Triggered</match>
+    <description>UniFi: Honeypot triggered.</description>
+    <group>unifi,security,syslog,</group>
+    <mitre>
+      <id>T1046</id><!-- Network Service Scanning -->
+    </mitre>
+  </rule>
+
+  <rule id="100111" level="5">
+    <if_sid>100100</if_sid>
+    <match>Blocked by Firewall</match>
+    <description>UniFi: Traffic blocked by firewall.</description>
+    <group>unifi,firewall,syslog,</group>
+    <mitre>
+      <id>T1071</id><!-- Application Layer Protocol -->
+    </mitre>
+  </rule>
+
+  <!-- Internet / WAN -->
+  <rule id="100112" level="5">
+    <if_sid>100100</if_sid>
+    <match>WAN Failover</match>
+    <description>UniFi: WAN failover event.</description>
+    <group>unifi,syslog,availability,</group>
+    <mitre>
+      <id>T1489</id><!-- Service Stop -->
+    </mitre>
+  </rule>
+
+  <rule id="100113" level="4">
+    <if_sid>100100</if_sid>
+    <match>High Latency Detected</match>
+    <description>UniFi: High latency detected.</description>
+    <group>unifi,syslog,performance,</group>
+  </rule>
+
+  <rule id="100114" level="4">
+    <if_sid>100100</if_sid>
+    <match>Packet Loss Detected</match>
+    <description>UniFi: Packet loss detected.</description>
+    <group>unifi,syslog,performance,</group>
+  </rule>
+
+  <!-- Power / PoE -->
+  <rule id="100115" level="6">
+    <if_sid>100100</if_sid>
+    <match>Insufficient PoE</match>
+    <description>UniFi: Insufficient PoE output.</description>
+    <group>unifi,syslog,power,</group>
+  </rule>
+
+  <rule id="100116" level="5">
+    <if_sid>100100</if_sid>
+    <match>AP Underpowered</match>
+    <description>UniFi: Access point underpowered.</description>
+    <group>unifi,syslog,power,</group>
+  </rule>
+
+  <rule id="100118" level="5">
+    <if_sid>100100</if_sid>
+    <match>PoE Availability Exceeded</match>
+    <description>UniFi: PoE availability exceeded on switch.</description>
+    <group>unifi,syslog,power,</group>
+  </rule>
+
+  <!-- Catch-all for other UniFi CEF events (no alert, grouping only) -->
+  <rule id="100199" level="0">
+    <if_sid>100100</if_sid>
+    <description>UniFi: CEF event (other).</description>
+    <group>unifi,syslog,</group>
+  </rule>
+
+  <!-- ================================================================
+       Device syslog (APs, switches, gateways - hostapd, etc.)
+       ================================================================ -->
+
+  <rule id="100200" level="0">
+    <decoded_as>unifi-device-syslog</decoded_as>
+    <description>UniFi device syslog (grouping).</description>
+  </rule>
+
+  <!--
+    IMPORTANT: "disassociated" must come BEFORE "associated" because
+    <match> is a substring check and "disassociated" contains "associated".
+  -->
+  <rule id="100201" level="2">
+    <if_sid>100200</if_sid>
+    <match>disassociated</match>
+    <description>UniFi device: WiFi client disassociated.</description>
+    <group>unifi,syslog,</group>
+  </rule>
+
+  <rule id="100202" level="2">
+    <if_sid>100200</if_sid>
+    <match>associated</match>
+    <description>UniFi device: WiFi client associated.</description>
+    <group>unifi,syslog,</group>
+  </rule>
+
+  <rule id="100203" level="2">
+    <if_sid>100200</if_sid>
+    <match>authenticated</match>
+    <description>UniFi device: WiFi client authenticated.</description>
+    <group>unifi,syslog,</group>
+  </rule>
+
+  <rule id="100204" level="3">
+    <if_sid>100200</if_sid>
+    <match>RADIUS</match>
+    <description>UniFi device: RADIUS event.</description>
+    <group>unifi,syslog,authentication,</group>
+  </rule>
+
+  <!-- ================================================================
+       Correlation / frequency rules
+       ================================================================ -->
+
+  <!-- Multiple RADIUS events in a short window (possible brute-force) -->
+  <rule id="100210" level="10" frequency="5" timeframe="60">
+    <if_matched_sid>100204</if_matched_sid>
+    <description>UniFi: Multiple RADIUS events in 60 seconds (possible brute-force).</description>
+    <group>unifi,security,authentication_failures,</group>
+    <mitre>
+      <id>T1110</id><!-- Brute Force -->
+    </mitre>
+  </rule>
+
+  <!-- Rapid association/disassociation flapping (possible deauth attack) -->
+  <rule id="100211" level="8" frequency="10" timeframe="60">
+    <if_matched_sid>100201</if_matched_sid>
+    <description>UniFi: Rapid WiFi disassociations in 60 seconds (possible deauth attack or flapping).</description>
+    <group>unifi,security,</group>
+    <mitre>
+      <id>T1498</id><!-- Network Denial of Service -->
+    </mitre>
+  </rule>
+
+  <!-- Repeated firewall blocks from the same source (possible scanning) -->
+  <rule id="100212" level="8" frequency="10" timeframe="120">
+    <if_matched_sid>100111</if_matched_sid>
+    <same_source_ip />
+    <description>UniFi: Repeated firewall blocks from same source in 120 seconds (possible scan).</description>
+    <group>unifi,security,firewall,</group>
+    <mitre>
+      <id>T1046</id><!-- Network Service Scanning -->
+    </mitre>
+  </rule>
+
+  <!-- Multiple threat detections in a short window -->
+  <rule id="100213" level="12" frequency="3" timeframe="120">
+    <if_matched_sid>100109</if_matched_sid>
+    <description>UniFi: Multiple security threats detected in 120 seconds.</description>
+    <group>unifi,security,</group>
+    <mitre>
+      <id>T1071</id><!-- Application Layer Protocol -->
+    </mitre>
+  </rule>
+</group>

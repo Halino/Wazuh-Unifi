@@ -1,0 +1,19 @@
+<!--
+  Snippet to add to Wazuh manager ossec.conf (e.g. /var/ossec/etc/ossec.conf).
+  Place inside <ossec_config>.
+-->
+
+<!-- Optional: receive syslog directly from UniFi / SIEM server on UDP 514 -->
+<remote>
+  <connection>syslog</connection>
+  <port>514</port>
+  <protocol>udp</protocol>
+  <allowed-ips>192.168.0.0/16</allowed-ips>
+</remote>
+
+<!--
+  Decoders and rules are loaded automatically from:
+  - /var/ossec/etc/decoders/   (copy unifi_decoders.xml here)
+  - /var/ossec/etc/rules/      (copy unifi_rules.xml here)
+  No extra <ruleset> or <decoder> entries are required if files are in place.
+-->

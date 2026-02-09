@@ -1,0 +1,15 @@
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Wazuh runtime (never commit agent keys or local state)
+/var/
+*.log

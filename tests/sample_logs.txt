@@ -1,0 +1,122 @@
+# Sample UniFi log lines for testing with wazuh-logtest
+# Run: /var/ossec/bin/wazuh-logtest
+# Then paste any line below (without the leading "# " comment prefix).
+#
+# Expected decoder and rule ID are noted for each sample.
+#
+# Verified against the official UniFi System Logs & SIEM Integration docs
+# (https://help.ui.com/hc/en-us/articles/33349041044119-UniFi-System-Logs)
+# as of February 2026 (UniFi Network Application 10.0.x).
+
+# =====================================================================
+# CEF: Admin / System
+# =====================================================================
+
+# Decoder: unifi-cef | Rule: 100101 (Admin Accessed)
+# Based on official CEF example from Ubiquiti docs (with UNIFIsubCategory)
+CEF:0|Ubiquiti|UniFi Network|9.3.33|544|Admin Accessed UniFi Network|1|UNIFIcategory=System UNIFIsubCategory=Admin UNIFIhost=Office UDM Pro UNIFIaccessMethod=web UNIFIadmin=Craig src=105.5.138.59 msg=Craig accessed UniFi Network using the web. Source IP: 105.5.138.59
+
+# Decoder: unifi-cef | Rule: 100102 (Admin Made Config Changes)
+CEF:0|Ubiquiti|UniFi Network|9.3.33|545|Admin Made Config Changes|3|UNIFIcategory=System UNIFIsubCategory=Admin UNIFIhost=Office UDM Pro src=10.0.0.5 UNIFIadmin=admin@example.com msg=Config changed.
+
+# Decoder: unifi-cef | Rule: 100103 (Device Adopted)
+CEF:0|Ubiquiti|UniFi Network|9.3.33|200|Device Adopted|1|UNIFIcategory=System UNIFIsubCategory=Devices UNIFIhost=Office UDM Pro msg=U6-LR adopted.
+
+# Decoder: unifi-cef | Rule: 100104 (Device Offline)
+CEF:0|Ubiquiti|UniFi Network|9.3.33|201|Device Offline|5|UNIFIcategory=System UNIFIsubCategory=Devices UNIFIhost=Office UDM Pro msg=USW-Lite-8 went offline.
+
+# =====================================================================
+# CEF: WiFi / Client (Monitoring category)
+# =====================================================================
+
+# Decoder: unifi-cef | Rule: 100105 (WiFi Client Connected)
+CEF:0|Ubiquiti|UniFi Network|9.3.33|300|WiFi Client Connected|1|UNIFIcategory=Monitoring UNIFIsubCategory=WiFi UNIFIclientMac=aa:bb:cc:dd:ee:ff msg=Client connected to SSID "Corp".
+
+# Decoder: unifi-cef | Rule: 100106 (WiFi Client Disconnected)
+# Based on official CEF example from Ubiquiti docs
+CEF:0|Ubiquiti|UniFi Network|9.3.33|401|WiFi Client Disconnected|2|UNIFIcategory=Monitoring UNIFIsubCategory=WiFi UNIFIhost=Office UDM Pro UNIFIlastConnectedToDeviceName=Lobby AP UNIFIlastConnectedToDeviceIp=192.168.100.5 UNIFIlastConnectedToDeviceMac=d8:b3:70:fb:fc:dd UNIFIclientAlias=Apple Watch 0d:87 UNIFIclientMac=0a:be:db:c8:0d:81 UNIFIwifiName=Employee WiFi UNIFIduration=6m 22s msg=Apple Watch 0d:87 disconnected from Employee WiFi.
+
+# Decoder: unifi-cef | Rule: 100117 (WiFi Client Roaming)
+CEF:0|Ubiquiti|UniFi Network|9.3.33|304|WiFi Client Roaming|1|UNIFIcategory=Monitoring UNIFIsubCategory=WiFi UNIFIclientMac=aa:bb:cc:dd:ee:ff msg=Client roamed from Lobby AP to Office AP.
+
+# Decoder: unifi-cef | Rule: 100107 (Client Connected - generic/wired)
+CEF:0|Ubiquiti|UniFi Network|9.3.33|302|Client Connected|1|UNIFIcategory=Monitoring UNIFIsubCategory=Wired msg=Wired client connected on port 3.
+
+# Decoder: unifi-cef | Rule: 100108 (Client Disconnected - generic)
+CEF:0|Ubiquiti|UniFi Network|9.3.33|303|Client Disconnected|1|UNIFIcategory=Monitoring UNIFIsubCategory=Wired msg=Wired client disconnected.
+
+# =====================================================================
+# CEF: Security
+# =====================================================================
+
+# Decoder: unifi-cef | Rule: 100109 (Threat Detected and Blocked)
+# Official event name from docs: "Threat Detected and Blocked"
+CEF:0|Ubiquiti|UniFi Network|9.3.33|400|Threat Detected and Blocked|8|UNIFIcategory=Security UNIFIsubCategory=Intrusion Prevention src=203.0.113.50 msg=IPS detected and blocked threat from external host.
+
+# Decoder: unifi-cef | Rule: 100110 (Honeypot Triggered)
+CEF:0|Ubiquiti|UniFi Network|9.3.33|401|Honeypot Triggered|8|UNIFIcategory=Security UNIFIsubCategory=Honeypot src=10.0.0.99 msg=Internal host touched honeypot.
+
+# Decoder: unifi-cef | Rule: 100111 (Blocked by Firewall)
+CEF:0|Ubiquiti|UniFi Network|9.3.33|402|Blocked by Firewall|5|UNIFIcategory=Security UNIFIsubCategory=Firewall src=198.51.100.22 msg=Traffic blocked by firewall rule.
+
+# =====================================================================
+# CEF: WAN / Performance (Internet category)
+# =====================================================================
+
+# Decoder: unifi-cef | Rule: 100112 (WAN Failover)
+CEF:0|Ubiquiti|UniFi Network|9.3.33|500|WAN Failover|5|UNIFIcategory=Internet UNIFIsubCategory=Outage msg=Primary WAN down, failed over to WAN2.
+
+# Decoder: unifi-cef | Rule: 100113 (High Latency)
+CEF:0|Ubiquiti|UniFi Network|9.3.33|501|High Latency Detected|4|UNIFIcategory=Internet UNIFIsubCategory=Performance msg=Latency 250ms on WAN1.
+
+# Decoder: unifi-cef | Rule: 100114 (Packet Loss)
+CEF:0|Ubiquiti|UniFi Network|9.3.33|502|Packet Loss Detected|4|UNIFIcategory=Internet UNIFIsubCategory=Performance msg=5% packet loss on WAN1.
+
+# =====================================================================
+# CEF: Power / PoE
+# =====================================================================
+
+# Decoder: unifi-cef | Rule: 100115 (Insufficient PoE Output)
+# Official event name: "Insufficient PoE Output"
+CEF:0|Ubiquiti|UniFi Network|9.3.33|600|Insufficient PoE Output|6|UNIFIcategory=Power UNIFIsubCategory=PoE msg=PoE budget exceeded on USW-24-PoE.
+
+# Decoder: unifi-cef | Rule: 100116 (AP Underpowered)
+CEF:0|Ubiquiti|UniFi Network|9.3.33|601|AP Underpowered|5|UNIFIcategory=Power UNIFIsubCategory=PoE msg=U6-LR running at reduced power.
+
+# Decoder: unifi-cef | Rule: 100118 (PoE Availability Exceeded)
+CEF:0|Ubiquiti|UniFi Network|9.3.33|602|PoE Availability Exceeded|5|UNIFIcategory=Power UNIFIsubCategory=Redundancy msg=PoE availability exceeded on USW-Enterprise-48-PoE.
+
+# =====================================================================
+# CEF: IPv6 source (verify IPv6 srcip extraction)
+# =====================================================================
+
+# Decoder: unifi-cef | Rule: 100109 (Threat Detected, IPv6 source)
+CEF:0|Ubiquiti|UniFi Network|9.3.33|400|Threat Detected and Blocked|8|UNIFIcategory=Security src=2001:db8::1 msg=IPS threat from IPv6 host.
+
+# =====================================================================
+# CEF: Unknown / future event (catch-all)
+# =====================================================================
+
+# Decoder: unifi-cef | Rule: 100199 (catch-all, level 0)
+# VPN events under System category will also land here until specific rules are added
+CEF:0|Ubiquiti|UniFi Network|10.0.162|999|Some Future Event|1|UNIFIcategory=Other msg=Unknown event type.
+
+# =====================================================================
+# Device syslog: association / disassociation
+# =====================================================================
+
+# Decoder: unifi-device-syslog | Rule: 100202 (associated)
+hostapd: ath0: STA aa:bb:cc:dd:ee:ff IEEE 802.11: associated
+
+# Decoder: unifi-device-syslog | Rule: 100201 (disassociated)
+hostapd: ath0: STA aa:bb:cc:dd:ee:ff IEEE 802.11: disassociated
+
+# Decoder: unifi-device-syslog | Rule: 100203 (authenticated)
+hostapd: ath0: STA aa:bb:cc:dd:ee:ff IEEE 802.11: authenticated
+
+# =====================================================================
+# Device syslog: RADIUS
+# =====================================================================
+
+# Decoder: unifi-device-syslog | Rule: 100204 (RADIUS event)
+hostapd: ath0: STA aa:bb:cc:dd:ee:ff RADIUS: Access-Request sent

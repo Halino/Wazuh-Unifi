@@ -1,0 +1,97 @@
+<!--
+  UniFi log decoders for Wazuh
+  Supports:
+  1. UniFi CEF export (Settings > Control Plane > Integrations > Activity Logging)
+  2. UniFi device syslog (APs/switches/gateways sending raw syslog)
+  Compatible with UniFi Network Application 9.3.x and 10.x (CEF format per official docs).
+  Device Product in CEF remains "UniFi Network"; regex allows optional " Application" suffix.
+-->
+
+<!-- ==================================================================
+     CEF decoders (UniFi SIEM / Activity Logging export)
+     ================================================================== -->
+
+<decoder name="unifi-cef">
+  <prematch>CEF:0\|Ubiquiti\|UniFi</prematch>
+  <regex>^CEF:0\|Ubiquiti\|UniFi Network(?: Application)?\|([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\|(.*)$</regex>
+  <order>unifi_device_version, unifi_event_id, unifi_event_name, unifi_severity, extra_data</order>
+</decoder>
+
+<!-- Source IP: supports both IPv4 and IPv6 addresses -->
+<decoder name="unifi-cef-srcip">
+  <parent>unifi-cef</parent>
+  <prematch> src=\S+</prematch>
+  <regex> src=([\d.:a-fA-F]+)</regex>
+  <order>srcip</order>
+</decoder>
+
+<decoder name="unifi-cef-category">
+  <parent>unifi-cef</parent>
+  <prematch> UNIFIcategory=\S+</prematch>
+  <regex> UNIFIcategory=(\S+)</regex>
+  <order>unifi_category</order>
+</decoder>
+
+<!--
+  UNIFIadmin: capture everything up to the next CEF key (word followed by =)
+  or end of line.  Uses <pcre2> (Wazuh 4.2+) for non-greedy matching so admin
+  names containing spaces are captured correctly.
+-->
+<decoder name="unifi-cef-admin">
+  <parent>unifi-cef</parent>
+  <prematch> UNIFIadmin=</prematch>
+  <pcre2> UNIFIadmin=(.+?)(?:\s+\w+=|$)</pcre2>
+  <order>srcuser</order>
+</decoder>
+
+<!-- Sub-category (e.g. Admin, WiFi, Firewall) from CEF extension -->
+<decoder name="unifi-cef-subcategory">
+  <parent>unifi-cef</parent>
+  <prematch> UNIFIsubCategory=\S+</prematch>
+  <regex> UNIFIsubCategory=(\S+)</regex>
+  <order>unifi_subcategory</order>
+</decoder>
+
+<!-- Client MAC from CEF extension (not from device syslog STA line) -->
+<decoder name="unifi-cef-clientmac">
+  <parent>unifi-cef</parent>
+  <prematch> UNIFIclientMac=</prematch>
+  <regex> UNIFIclientMac=([0-9a-fA-F:]{17})</regex>
+  <order>unifi_client_mac</order>
+</decoder>
+
+<!-- ==================================================================
+     Device syslog decoders (APs, switches, gateways)
+     ================================================================== -->
+
+<!--
+  Prematch targets specific process/subsystem names found in UniFi device
+  syslog.  The broad "UniFi" token was removed to avoid accidentally
+  matching CEF logs if decoder load order ever changes.
+-->
+<decoder name="unifi-device-syslog">
+  <prematch>hostapd:|ath\d+:|wpa_supplicant|ubnt-</prematch>
+  <regex>^(.*)$</regex>
+  <order>extra_data</order>
+</decoder>
+
+<decoder name="unifi-device-sta-mac">
+  <parent>unifi-device-syslog</parent>
+  <prematch> STA [0-9a-fA-F:]{17}</prematch>
+  <regex> STA ([0-9a-fA-F:]{17}) (.+)$</regex>
+  <order>unifi_client_mac, extra_data</order>
+</decoder>
+
+<decoder name="unifi-device-associated">
+  <parent>unifi-device-syslog</parent>
+  <prematch>associated</prematch>
+  <regex>STA ([0-9a-fA-F:]{17}) .* (associated)</regex>
+  <order>unifi_client_mac, action</order>
+</decoder>
+
+<decoder name="unifi-device-disassociated">
+  <parent>unifi-device-syslog</parent>
+  <prematch>disassociated</prematch>
+  <regex>STA ([0-9a-fA-F:]{17}) .* (disassociated)</regex>
+  <order>unifi_client_mac, action</order>
+</decoder>
