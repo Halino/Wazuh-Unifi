@@ -94,7 +94,7 @@ sudo systemctl restart wazuh-manager
 | Power | PoE / AP underpowered, PoE availability exceeded (level 5-6) |
 | Correlation | Brute-force, deauth flapping, repeated blocks, multi-threat (level 8-12) |
 
-In the Wazuh UI you can filter with e.g. `rule.groups:unifi` or by rule ID range `100100`-`100213`.
+In the Wazuh UI you can filter with e.g. `rule.groups:unifi` or by rule ID range `100100`-`100218`.
 
 ## Correlation / frequency rules
 
@@ -106,6 +106,18 @@ These rules fire when a base rule triggers repeatedly within a time window:
 | 100211 | 100201 (disassociated) | 10 in 60 s | 8 | Rapid disassociations (deauth / flapping) |
 | 100212 | 100111 (firewall block) | 10 in 120 s, same src | 8 | Repeated firewall blocks (scanning) |
 | 100213 | 100109 (threat) | 3 in 120 s | 12 | Multiple threat detections |
+| 100214 | 100120 (internal threat) | 3 in 300 s, same src | 12 | Multiple internal threats from one host |
+
+### Aggressive correlation rules
+
+These are **more sensitive and potentially noisier**. They all add `aggressive` to `rule.groups` so you can filter or treat them differently:
+
+| Rule ID | Triggers on | Frequency / Window | Level | Description |
+|---------|------------|-------------------|-------|-------------|
+| 100215 | 100111 (firewall block) | 3 in 300 s, same src | 10 | Aggressive: early firewall scan detection |
+| 100216 | 100204 (RADIUS) | 3 in 300 s, same src | 10 | Aggressive: early RADIUS brute-force suspicion |
+| 100217 | 100214 (internal threat) | 2 in 900 s, same src | 14 | Aggressive: persistent internal threat source |
+| 100218 | 100109 (threat) | 2 in 600 s, same src | 14 | Aggressive: source triggering multiple threat detections |
 
 ## MITRE ATT&CK mappings
 

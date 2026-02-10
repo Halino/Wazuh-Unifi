@@ -59,6 +59,23 @@ CEF:0|Ubiquiti|UniFi Network|9.3.33|401|Honeypot Triggered|8|UNIFIcategory=Secur
 # Decoder: unifi-cef | Rule: 100111 (Blocked by Firewall)
 CEF:0|Ubiquiti|UniFi Network|9.3.33|402|Blocked by Firewall|5|UNIFIcategory=Security UNIFIsubCategory=Firewall src=198.51.100.22 msg=Traffic blocked by firewall rule.
 
+# Decoder: unifi-cef | Rules: 100120, 100214, 100217 (internal, repeated internal threats - aggressive)
+# - First paste this line 3+ times to trigger 100120 and 100214:
+#   - 100109: Threat Detected and Blocked (base)
+#   - 100120: Threat from internal source (RFC1918)
+#   - 100214: Multiple internal threats from same host (3 in 5 minutes)
+# - Then keep pasting (or replay over time) to eventually hit 100217 (persistent internal source):
+#   - 100217: Persistent internal threats in 15 minutes (aggressive)
+CEF:0|Ubiquiti|UniFi Network|9.3.33|400|Threat Detected and Blocked|8|UNIFIcategory=Security UNIFIsubCategory=Intrusion Prevention src=192.168.10.50 msg=IPS detected and blocked threat from internal host.
+
+# Decoder: unifi-cef | Rules: 100111, 100212, 100215 (firewall scan - normal + aggressive)
+# - Paste this line 10+ times within 2 minutes to trigger:
+#   - 100111: Blocked by Firewall
+#   - 100212: Repeated firewall blocks from same source (10 in 120 s)
+# - Paste it at least 3 times within 5 minutes to also trigger:
+#   - 100215: Aggressive early scan detection (3 in 300 s)
+CEF:0|Ubiquiti|UniFi Network|9.3.33|402|Blocked by Firewall|5|UNIFIcategory=Security UNIFIsubCategory=Firewall src=198.51.100.200 msg=Traffic blocked by firewall rule (scan).
+
 # =====================================================================
 # CEF: WAN / Performance (Internet category)
 # =====================================================================
@@ -120,3 +137,7 @@ hostapd: ath0: STA aa:bb:cc:dd:ee:ff IEEE 802.11: authenticated
 
 # Decoder: unifi-device-syslog | Rule: 100204 (RADIUS event)
 hostapd: ath0: STA aa:bb:cc:dd:ee:ff RADIUS: Access-Request sent
+
+# To exercise RADIUS correlation rules:
+# - Paste the RADIUS line above 5+ times in 60 s to trigger 100210 (normal brute-force rule).
+# - Paste it 3+ times in 5 minutes with the same source IP to trigger 100216 (aggressive brute-force suspicion).

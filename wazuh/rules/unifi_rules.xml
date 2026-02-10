@@ -102,6 +102,14 @@
     </mitre>
   </rule>
 
+  <!-- Threat Detected and Blocked enrichment -->
+  <rule id="100120" level="10">
+    <if_sid>100109</if_sid>
+    <if_srcip>10.0.0.0/8,172.16.0.0/12,192.168.0.0/16</if_srcip>
+    <description>UniFi: Threat detected and blocked from internal source.</description>
+    <group>unifi,security,syslog,internal,</group>
+  </rule>
+
   <rule id="100110" level="8">
     <if_sid>100100</if_sid>
     <match>Honeypot Triggered</match>
@@ -259,6 +267,66 @@
     <group>unifi,security,</group>
     <mitre>
       <id>T1071</id><!-- Application Layer Protocol -->
+    </mitre>
+  </rule>
+
+  <!-- Multiple internal host threats in a short window -->
+  <rule id="100214" level="12" frequency="3" timeframe="300">
+    <if_matched_sid>100120</if_matched_sid>
+    <same_source_ip />
+    <description>UniFi: Multiple threats detected and blocked from the same internal source in 5 minutes.</description>
+    <group>unifi,security,internal,</group>
+    <mitre>
+      <id>T1071</id><!-- Application Layer Protocol -->
+    </mitre>
+  </rule>
+
+  <!-- ================================================================
+       Aggressive / high-sensitivity correlation rules
+       These are intentionally more noisy but catch weaker patterns.
+       ================================================================ -->
+
+  <!-- Faster firewall scan detection: fewer blocks over a longer window -->
+  <rule id="100215" level="10" frequency="3" timeframe="300">
+    <if_matched_sid>100111</if_matched_sid>
+    <same_source_ip />
+    <description>UniFi (aggressive): Repeated firewall blocks from same source in 5 minutes.</description>
+    <group>unifi,security,firewall,aggressive,</group>
+    <mitre>
+      <id>T1046</id><!-- Network Service Scanning -->
+    </mitre>
+  </rule>
+
+  <!-- Aggressive RADIUS brute-force indication: repeated RADIUS pattern from same IP -->
+  <rule id="100216" level="10" frequency="3" timeframe="300">
+    <if_matched_sid>100204</if_matched_sid>
+    <same_source_ip />
+    <description>UniFi (aggressive): Repeated RADIUS activity from same source in 5 minutes (possible brute-force).</description>
+    <group>unifi,security,authentication_failures,aggressive,</group>
+    <mitre>
+      <id>T1110</id><!-- Brute Force -->
+    </mitre>
+  </rule>
+
+  <!-- Escalate persistent internal threats: internal host keeps tripping IPS -->
+  <rule id="100217" level="14" frequency="2" timeframe="900">
+    <if_matched_sid>100214</if_matched_sid>
+    <same_source_ip />
+    <description>UniFi (aggressive): Persistent threats from the same internal host in 15 minutes.</description>
+    <group>unifi,security,internal,aggressive,</group>
+    <mitre>
+      <id>T1071</id><!-- Application Layer Protocol -->
+    </mitre>
+  </rule>
+
+  <!-- Combine IPS and honeypot: very suspicious source touching multiple security controls -->
+  <rule id="100218" level="14" frequency="2" timeframe="600">
+    <if_matched_sid>100109</if_matched_sid>
+    <same_source_ip />
+    <description>UniFi (aggressive): Source triggering multiple threats (IPS / honeypot / firewall) in 10 minutes.</description>
+    <group>unifi,security,aggressive,</group>
+    <mitre>
+      <id>T1046</id><!-- Network Service Scanning / recon via multiple vectors -->
     </mitre>
   </rule>
 </group>
