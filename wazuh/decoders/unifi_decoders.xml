@@ -13,7 +13,7 @@
 
 <decoder name="unifi-cef">
   <prematch>CEF:0\|Ubiquiti\|UniFi</prematch>
-  <regex>^CEF:0\|Ubiquiti\|UniFi Network(?: Application)?\|([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\|(.*)$</regex>
+  <regex type="pcre2">^CEF:0\|Ubiquiti\|UniFi Network(?: Application)?\|([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\|(.*)$</regex>
   <order>unifi_device_version, unifi_event_id, unifi_event_name, unifi_severity, extra_data</order>
 </decoder>
 
@@ -34,13 +34,13 @@
 
 <!--
   UNIFIadmin: capture everything up to the next CEF key (word followed by =)
-  or end of line.  Uses <pcre2> (Wazuh 4.2+) for non-greedy matching so admin
-  names containing spaces are captured correctly.
+  or end of line.  Uses <regex type="pcre2"> (Wazuh 4.2+) for non-greedy
+  matching so admin names containing spaces are captured correctly.
 -->
 <decoder name="unifi-cef-admin">
   <parent>unifi-cef</parent>
   <prematch> UNIFIadmin=</prematch>
-  <pcre2> UNIFIadmin=(.+?)(?:\s+\w+=|$)</pcre2>
+  <regex type="pcre2"> UNIFIadmin=(.+?)(?:\s+\w+=|$)</regex>
   <order>srcuser</order>
 </decoder>
 

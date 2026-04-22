@@ -105,7 +105,9 @@
   <!-- Threat Detected and Blocked enrichment -->
   <rule id="100120" level="10">
     <if_sid>100109</if_sid>
-    <if_srcip>10.0.0.0/8,172.16.0.0/12,192.168.0.0/16</if_srcip>
+    <srcip>10.0.0.0/8</srcip>
+    <srcip>172.16.0.0/12</srcip>
+    <srcip>192.168.0.0/16</srcip>
     <description>UniFi: Threat detected and blocked from internal source.</description>
     <group>unifi,security,syslog,internal,</group>
   </rule>
