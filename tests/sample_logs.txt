@@ -1,6 +1,7 @@
 # Sample UniFi log lines for testing with wazuh-logtest
 # Run: /var/ossec/bin/wazuh-logtest
 # Then paste any line below (without the leading "# " comment prefix).
+# Make sure to add date, time, and hostname (i.e. Jul 30 05:18:58 udr7) to the beginning of the line before pasting the rest. 
 #
 # Expected decoder and rule ID are noted for each sample.
 #
