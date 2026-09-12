@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Documentation
+- **Rule file load-order warning**: Added a note to the deployment section explaining that `wazuh-analysisd` merges the stock ruleset and `etc/rules/` into one alphabetical-by-filename load order (directory of origin is ignored), that Wazuh's stock rule files are all digit-prefixed, and why `unifi_rules.xml`'s letter-leading name and self-contained anchors keep it safe from that trap — plus guidance for anyone renaming it or layering more custom rules on top.
+
 ### Verified
 - **Verified against official Ubiquiti docs** (February 2026): All decoders, rules, and event names cross-checked with the [UniFi System Logs & SIEM Integration](https://help.ui.com/hc/en-us/articles/33349041044119-UniFi-System-Logs) documentation and the [Traffic Flows](https://help.ui.com/hc/en-us/articles/32201256219799) page.
 - **UniFi Network Application 10.0.x** (latest: 10.0.162): CEF format unchanged (`CEF:0|Ubiquiti|UniFi Network|...`).
